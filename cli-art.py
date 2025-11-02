@@ -13,8 +13,8 @@ def convert_brightness_to_ascii(value, invert):
         return ascii_chars_reversed[int((value/100)*(len(ascii_chars)-1))]
     return ascii_chars[int((value/100)*(len(ascii_chars)-1))]
 
-def to_ascii(image_color, invert, image_fit, image_width, pixel_conversion_type):
-    with Image.open("95368ef6621659a09e8f2d1387c7fb8a.jpg") as image_file:
+def to_ascii(img, image_color, invert, image_fit, image_width, pixel_conversion_type):
+    with Image.open(img) as image_file:
         # print("Successfully loaded image")
         # print(image_file.width, image_file.height, "og image size")
 
@@ -116,6 +116,11 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
+        "filepath",
+        help="The path to the input image file (e.g., image.png) or a URL."
+    )
+
+    parser.add_argument(
         '--img-color',
         default='colored',
         help="image color options include color names (black, red, green, yellow, blue, magenta, cyan, white), rgb values(\"r, g, b\"), black and white(\"b&w\"), or colored(colored) which is the default value"
@@ -180,4 +185,4 @@ if __name__ == "__main__":
         input_image_color = user_inputs.img_color
 
 
-    to_ascii(image_color=input_image_color, invert=user_inputs.invert, image_fit=image_fit_input, image_width=user_input_image_width, pixel_conversion_type=user_inputs.conversion_type)
+    to_ascii(img=user_inputs.filepath, image_color=input_image_color, invert=user_inputs.invert, image_fit=image_fit_input, image_width=user_input_image_width, pixel_conversion_type=user_inputs.conversion_type)
