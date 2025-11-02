@@ -53,5 +53,3 @@ with Image.open("image.png") as image_file:
             # print(Fore.BLUE + pixel_ascii_char[value][row_value] * 3, end = "")
         print_this += "\n\n"
     print(print_this)
-
-print(max((2, 4, 7)))
