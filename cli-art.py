@@ -1,5 +1,5 @@
 # add max-height flag
-from PIL import Image
+from PIL import Image, ImageEnhance
 from colorama import Fore
 import sys
 import argparse
@@ -48,7 +48,7 @@ def get_pixel_brightness_values(pixel_details, pixel_conversion_type):
                 rgb_values = 0
                 for value in pixel_details[y][x]:
                     rgb_values += value
-                row.append(int(0.21*pixel_details[y][x][0] + 0.72*pixel_details[y][x][1] + 0.07*pixel_details[y][x][2])) # luminosity
+                row.append(int(rgb_values/3)) # average
             elif pixel_conversion_type.lower() == "min-max":
                 row.append(int((max(pixel_details[y][x]) + (min(pixel_details[y][x])))/2)) # min-max
             elif pixel_conversion_type.lower() == "luminosity":
@@ -65,18 +65,6 @@ def get_pixel_ascii_char(pixel_brightness_values, invert):
         pixel_ascii_char.append(row)
     # print(pixel_ascii_char[0])
     return pixel_ascii_char
-
-    pixel_rgb_values = []
-    for y in range(0, len(pixel_details)):
-        row = []
-        for x in range(0, len(pixel_details[y])):
-            rgb_values = []
-            for value in pixel_details[y][x]:
-                rgb_values.append(value)
-            row.append(rgb_values)
-        pixel_rgb_values.append(row)
-    # print(pixel_brightness_values[0], len(pixel_brightness_values))
-    return pixel_rgb_values
 
 def print_image(pixel_ascii_char, pixel_details, image_color):
     if isinstance(image_color, (list)):
@@ -109,7 +97,7 @@ def print_image(pixel_ascii_char, pixel_details, image_color):
             print()
             print()
 
-def to_ascii(filepath, image_color, invert, image_fit, image_width, pixel_conversion_type):
+def to_ascii(filepath, image_color, invert, image_fit, image_width, pixel_conversion_type, contrast):
     image_source = None
     if filepath.startswith('http://') or filepath.startswith('https://'):
         try:
@@ -131,6 +119,9 @@ def to_ascii(filepath, image_color, invert, image_fit, image_width, pixel_conver
             # print("Successfully loaded image")
             # print(image_file.width, image_file.height, "og image size")
             image = get_resized_img(image_file, image_fit, image_width)
+            if contrast != 1.0:
+                enhancer = ImageEnhance.Contrast(image)
+                image = enhancer.enhance(contrast)
 
             pixel_details = get_pixel_details(image)
 
@@ -189,6 +180,13 @@ if __name__ == "__main__":
         help="determines how the ascii value is calculated(average, min-max, luminosity(default)). Average calculates the ascii value by taking the average of the rgb values. Min-max takes the average of the minimum and maximum of rgb values. Luminosity takes a weighted average of the R(0.21), G(0.72) and B(0.07) values to account for human perception"
     )
 
+    parser.add_argument(
+        '--contrast',
+        type=float,
+        default=1.0,
+        help="Enhance image contrast. >1.0 for more, <1.0 for less."
+    )
+    
     image_fit_input = ""
     user_inputs = parser.parse_args()
     user_input_image_width = 0
@@ -222,4 +220,4 @@ if __name__ == "__main__":
         input_image_color = user_inputs.img_color
 
 
-    to_ascii(filepath=user_inputs.filepath, image_color=input_image_color, invert=user_inputs.invert, image_fit=image_fit_input, image_width=user_input_image_width, pixel_conversion_type=user_inputs.conversion_type)
+    to_ascii(filepath=user_inputs.filepath, image_color=input_image_color, invert=user_inputs.invert, image_fit=image_fit_input, image_width=user_input_image_width, pixel_conversion_type=user_inputs.conversion_type, contrast=user_inputs.contrast)
