@@ -1,5 +1,6 @@
 # add option for brightness using lighness max(R, G, B) + min(R, G, B) / 2 and luminosity 0.21 R + 0.72 G + 0.07 B
 from PIL import Image
+from colorama import Fore
 
 def convert_brightness_to_ascii(value):
     ascii_chars = "`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
@@ -46,5 +47,7 @@ with Image.open("image.png") as image_file:
     for value in range(0, len(pixel_ascii_char)):
         for row_value in range(0, len(pixel_ascii_char[value])):
             print(pixel_ascii_char[value][row_value] * 3, end = "")
+            # print("\033[38;2;11;219;247m" + pixel_ascii_char[value][row_value] * 3, end = "") # prints blue color with rgb(11, 219,247)
+            # print(Fore.BLUE + pixel_ascii_char[value][row_value] * 3, end = "")
         print()
         print()
