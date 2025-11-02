@@ -44,8 +44,6 @@ with Image.open("95368ef6621659a09e8f2d1387c7fb8a.jpg") as image_file:
         pixel_ascii_char.append(row)
     print(pixel_ascii_char[0])
 
-    print_this = ""
-
     pixel_rgb_values = []
     for y in range(0, len(pixel_details)):
         row = []
