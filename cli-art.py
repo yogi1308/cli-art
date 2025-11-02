@@ -52,7 +52,16 @@ def to_ascii(pixel_conversion_type="luminosity", invert=False, image_width=622, 
         # print(pixel_ascii_char[0])
 
 
-        print_this = ""
+    pixel_rgb_values = []
+    for y in range(0, len(pixel_details)):
+        row = []
+        for x in range(0, len(pixel_details[y])):
+            rgb_values = []
+            for value in pixel_details[y][x]:
+                rgb_values.append(value)
+            row.append(rgb_values)
+        pixel_rgb_values.append(row)
+    # print(pixel_brightness_values[0], len(pixel_brightness_values))
 
         if image_color.lower == 'black' or image_color.lower == 'red' or image_color.lower == 'green' or image_color.lower == 'yellow' or image_color.lower == 'blue' or image_color.lower == 'magenta' or image_color.lower == 'cyan' or image_color.lower == 'white':
             image_color = image_color.upper()
