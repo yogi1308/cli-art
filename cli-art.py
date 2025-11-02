@@ -113,11 +113,11 @@ def to_ascii(filepath, image_color, invert, image_fit, image_width, pixel_conver
     image_source = None
     if filepath.startswith('http://') or filepath.startswith('https://'):
         try:
-            # 2. Download the image data
+            # Download the image data
             response = requests.get(filepath)
             response.raise_for_status()  # Check for bad responses (404, 500)
             
-            # 3. Use BytesIO to treat the downloaded data (in memory) like a file
+            # Use BytesIO to treat the downloaded data (in memory) like a file
             image_source = BytesIO(response.content)
             
         except requests.exceptions.RequestException as e:
