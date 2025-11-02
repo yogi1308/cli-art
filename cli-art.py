@@ -15,14 +15,14 @@ def convert_brightness_to_ascii(value, invert):
 
 def to_ascii(image_color, invert, image_width, pixel_conversion_type):
     with Image.open("95368ef6621659a09e8f2d1387c7fb8a.jpg") as image_file:
-        print("Successfully loaded image")
-        print(image_file.width, image_file.height, "og image size")
+        # print("Successfully loaded image")
+        # print(image_file.width, image_file.height, "og image size")
 
 
         image = image_file
         new_image_width = image_width
         image = image_file.resize((new_image_width, int(new_image_width * (image_file.height / image_file.width))))
-        print(image.size)
+        # print(image.size)
 
 
         pixel_details = []
@@ -71,26 +71,27 @@ def to_ascii(image_color, invert, image_width, pixel_conversion_type):
             pixel_rgb_values.append(row)
         # print(pixel_brightness_values[0], len(pixel_brightness_values))
 
-        if image_color.lower == 'black' or image_color.lower == 'red' or image_color.lower == 'green' or image_color.lower == 'yellow' or image_color.lower == 'blue' or image_color.lower == 'magenta' or image_color.lower == 'cyan' or image_color.lower == 'white':
-            image_color = image_color.upper()
-            for value in range(0, len(pixel_ascii_char)):
-                for row_value in range(0, len(pixel_ascii_char[value])):
-                    print(Fore.image_color + pixel_ascii_char[value][row_value] * 3, end = "")
-                print()
-                print()
-        elif isinstance(image_color, (list, tuple)):
+        if isinstance(image_color, (list)):
             if 0 <= image_color[0] <= 255 and 0 <= image_color[1] <= 255 and 0 <= image_color[2] <= 255:
                 for value in range(0, len(pixel_ascii_char)):
                     for row_value in range(0, len(pixel_ascii_char[value])):
-                        print(Fore.image_color + pixel_ascii_char[value][row_value] * 3, end = "")
+                        print(f"\033[38;2;{image_color[0]};{image_color[1]};{image_color[2]}m" + pixel_ascii_char[value][row_value] * 3, end = "")
                     print()
                     print()
             else:
                 raise ValueError 
-        elif image_color.lower == "b&w":
+        elif image_color.lower().strip() == 'black' or image_color.lower().strip() == 'red' or image_color.lower().strip() == 'green' or image_color.lower().strip() == 'yellow' or image_color.lower().strip() == 'blue' or image_color.lower().strip() == 'magenta' or image_color.lower().strip() == 'cyan' or image_color.lower().strip() == 'white':
+            image_color = image_color.upper().strip()
             for value in range(0, len(pixel_ascii_char)):
                 for row_value in range(0, len(pixel_ascii_char[value])):
-                    print_this += f"{pixel_ascii_char[value][row_value] * 3}"
+                    print(getattr(Fore, image_color) + pixel_ascii_char[value][row_value] * 3, end = "")
+                print()
+                print()
+        elif image_color.lower().strip() == "b&w":
+            print(f"b&w")
+            for value in range(0, len(pixel_ascii_char)):
+                for row_value in range(0, len(pixel_ascii_char[value])):
+                    print(f"{pixel_ascii_char[value][row_value] * 3}", end="")
                 print()
                 print()
         else:
@@ -102,14 +103,13 @@ def to_ascii(image_color, invert, image_width, pixel_conversion_type):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="converts an image to ascii"
+        description="converts an image to ascii. Recommended that you zoom out as much as you can before executing the script"
     )
 
     parser.add_argument(
         '--img-color',
-        type=str, 
         default='colored',
-        help="image color options include color names (black, red, green, yellow, blue, magenta, cyan, white), rgb values in a list or tuple([r, g, b], (r, g, b)), black and white(b&w), or colored(colored) which is the default value"
+        help="image color options include color names (black, red, green, yellow, blue, magenta, cyan, white), rgb values(\"r, g, b\"), black and white(\"b&w\"), or colored(colored) which is the default value"
     )
 
     parser.add_argument(
@@ -121,7 +121,7 @@ if __name__ == "__main__":
     parser.add_argument(
         '--width',
         type=int,
-        help="an integer value greater than 10 and less than your terminal windows's max width. Default value is the terminal windows's width. Height will be calculated using the width to preserve the original image's aspect ratio"
+        help="an integer value greater than 10 and less than your terminal windows's max width. Default value is the terminal windows's width. if you input a value which is less than 10 or greater than your terminal's width than it will use the defalut value. Height will be calculated using the width to preserve the original image's aspect ratio"
     )
 
     parser.add_argument(
@@ -132,15 +132,31 @@ if __name__ == "__main__":
     )
 
     user_inputs = parser.parse_args()
-    user_input_image_width = user_inputs.width
+    user_input_image_width = 0
     terminal_size = int(shutil.get_terminal_size().columns/3)
-    if user_input_image_width is not None:
-        if 10 < user_input_image_width < terminal_size:
+    if user_inputs.width is not None:
+        if 10 < user_inputs.width < terminal_size:
             user_input_image_width = user_inputs.width
         else:
-            user_input_image_width = terminal_size
+            raise ValueError(f"Error: Width must be between 10 and {terminal_size}.")
     else:
         user_input_image_width = terminal_size
+    
+    input_image_color = []
+    if "," in user_inputs.img_color.strip():
+        input_image_color = user_inputs.img_color.strip().split(",")
+        try:
+            for i in range(0, len(input_image_color)):
+                input_image_color[i] = int(input_image_color[i])
+        except ValueError:
+            raise ValueError(f"Error: RGB values should be integers between 0 and 255")
+        for value in input_image_color:
+            if value < 0 or value > 255:
+                raise ValueError(f"Error: RGB values should be integers between 0 and 255")
+        if len(input_image_color) != 3:
+            raise ValueError(f"Error: your argument for rgb values doesn't contain 3 values")
+    else:
+        input_image_color = user_inputs.img_color
 
 
-    to_ascii(image_color=user_inputs.img_color, invert=user_inputs.invert, image_width=user_input_image_width, pixel_conversion_type=user_inputs.conversion_type)
+    to_ascii(image_color=input_image_color, invert=user_inputs.invert, image_width=user_input_image_width, pixel_conversion_type=user_inputs.conversion_type)
