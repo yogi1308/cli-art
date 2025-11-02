@@ -4,8 +4,9 @@ from colorama import Fore
 
 def convert_brightness_to_ascii(value):
     ascii_chars = "`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
+    ascii_chars_reversed = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~i!lI;:,\"`"
     value = int((value/255)*100)
-    return ascii_chars[int((value/100)*(len(ascii_chars)-1))]
+    return ascii_chars_reversed[int((value/100)*(len(ascii_chars)-1))]
 
 with Image.open("image.png") as image_file:
     print("Successfully loaded image")
@@ -20,7 +21,7 @@ with Image.open("image.png") as image_file:
             image.getpixel((x, y))
             row.append(image.getpixel((x, y)))
         pixel_details.append(row)
-    print(pixel_details[0], len(pixel_details))
+    # print(pixel_details[0], len(pixel_details))
 
     pixel_brightness_values = []
     for y in range(0, len(pixel_details)):
@@ -33,7 +34,7 @@ with Image.open("image.png") as image_file:
             # row.append(int((max(pixel_details[y][x]) + (min(pixel_details[y][x])))/2)) # min-max
             row.append(int(0.21*pixel_details[y][x][0] + 0.72*pixel_details[y][x][1] + 0.07*pixel_details[y][x][2])) # luminosity
         pixel_brightness_values.append(row)
-    print(pixel_brightness_values[0], len(pixel_brightness_values))
+    # print(pixel_brightness_values[0], len(pixel_brightness_values))
 
     pixel_ascii_char = []
     for value in range(0, len(pixel_brightness_values)):
@@ -41,7 +42,7 @@ with Image.open("image.png") as image_file:
         for row_value in range(0, len(pixel_brightness_values[value])):
             row.append(convert_brightness_to_ascii(pixel_brightness_values[value][row_value]))
         pixel_ascii_char.append(row)
-    print(pixel_ascii_char[0])
+    # print(pixel_ascii_char[0])
 
     print_this = ""
 
