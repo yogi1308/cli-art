@@ -1,4 +1,4 @@
-# enable reading terminal height and width to get the ideal width and height for the image
+# add max-height flag
 from PIL import Image
 from colorama import Fore
 import sys
@@ -13,16 +13,25 @@ def convert_brightness_to_ascii(value, invert):
         return ascii_chars_reversed[int((value/100)*(len(ascii_chars)-1))]
     return ascii_chars[int((value/100)*(len(ascii_chars)-1))]
 
-def to_ascii(image_color, invert, image_width, pixel_conversion_type):
+def to_ascii(image_color, invert, image_fit, image_width, pixel_conversion_type):
     with Image.open("95368ef6621659a09e8f2d1387c7fb8a.jpg") as image_file:
         # print("Successfully loaded image")
         # print(image_file.width, image_file.height, "og image size")
 
 
         image = image_file
-        new_image_width = image_width
-        image = image_file.resize((new_image_width, int(new_image_width * (image_file.height / image_file.width))))
         # print(image.size)
+        if image_fit != "ignore":
+            if image_fit == "height":
+                new_image_height = int(shutil.get_terminal_size().lines/2)
+                image = image_file.resize((int(new_image_height / (image_file.height / image_file.width)), new_image_height))
+            elif image_fit == "width":
+                new_image_width = image_width
+                image = image_file.resize((new_image_width, int(new_image_width * (image_file.height / image_file.width))))
+        else:
+            new_image_width = image_width
+            image = image_file.resize((new_image_width, int(new_image_width * (image_file.height / image_file.width))))
+
 
 
         pixel_details = []
@@ -121,7 +130,14 @@ if __name__ == "__main__":
     parser.add_argument(
         '--width',
         type=int,
-        help="an integer value greater than 10 and less than your terminal windows's max width. Default value is the terminal windows's width. if you input a value which is less than 10 or greater than your terminal's width than it will use the defalut value. Height will be calculated using the width to preserve the original image's aspect ratio"
+        help="an integer value greater than 10 and less than your terminal windows's max width. Default value is calculated using terminals height and image's aspect ratio. if you input a value which is less than 10 or greater than your terminal's width than it will use the defalut value. Height will be calculated using the width to preserve the original image's aspect ratio"
+    )
+
+    parser.add_argument(
+        '--fit',
+        choices=['height', 'width'],
+        default='height',
+        help="Fits to the terminal's height or width. default(height). will be ignored if provided with width"
     )
 
     parser.add_argument(
@@ -131,16 +147,21 @@ if __name__ == "__main__":
         help="determines how the ascii value is calculated(average, min-max, luminosity(default)). Average calculates the ascii value by taking the average of the rgb values. Min-max takes the average of the minimum and maximum of rgb values. Luminosity takes a weighted average of the R(0.21), G(0.72) and B(0.07) values to account for human perception"
     )
 
+    image_fit_input = ""
     user_inputs = parser.parse_args()
     user_input_image_width = 0
     terminal_size = int(shutil.get_terminal_size().columns/3)
     if user_inputs.width is not None:
+        image_fit_input = "ignore"
         if 10 < user_inputs.width < terminal_size:
             user_input_image_width = user_inputs.width
         else:
             raise ValueError(f"Error: Width must be between 10 and {terminal_size}.")
     else:
         user_input_image_width = terminal_size
+
+    if image_fit_input != "ignore":
+        image_fit_input = user_inputs.fit
     
     input_image_color = []
     if "," in user_inputs.img_color.strip():
@@ -159,4 +180,4 @@ if __name__ == "__main__":
         input_image_color = user_inputs.img_color
 
 
-    to_ascii(image_color=input_image_color, invert=user_inputs.invert, image_width=user_input_image_width, pixel_conversion_type=user_inputs.conversion_type)
+    to_ascii(image_color=input_image_color, invert=user_inputs.invert, image_fit=image_fit_input, image_width=user_input_image_width, pixel_conversion_type=user_inputs.conversion_type)
