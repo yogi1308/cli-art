@@ -4,7 +4,7 @@ from colorama import Fore
 
 def convert_brightness_to_ascii(value):
     ascii_chars = "`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
-    ascii_chars_reversed = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft/\|()1{}[]?-_+~i!lI;:,\"`"
+    ascii_chars_reversed = ascii_chars[::-1]
     value = int((value/255)*100)
     return ascii_chars_reversed[int((value/100)*(len(ascii_chars)-1))]
 
