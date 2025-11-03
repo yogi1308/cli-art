@@ -1,4 +1,4 @@
-# add max-height flag
+# check invert
 from PIL import Image, ImageEnhance
 from colorama import Fore
 import sys
@@ -140,7 +140,21 @@ def to_ascii(filepath, image_color, invert, image_fit, image_width, pixel_conver
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
-        description="converts an image to ascii. Recommended that you zoom out as much as you can before executing the script"
+        description="converts an image to ascii. Recommended that you zoom out as much as you can before executing the script",
+        epilog="""
+            Examples: \n
+            # Basic use with a local file: 
+            %(prog)s my_image.jpg \n
+            
+            # From a URL (remember to use quotes!): 
+            %(prog)s "https://i.pinimg.com/736x/f6/97/a8/f697a839e42edcb9a473809878b54420.jpg" \n
+            
+            # Full color, 100 pixels wide: 
+            %(prog)s my_image.jpg --width 100 --img-color colored \n
+            
+            # Green text, inverted, and using 'average' brightness: 
+            %(prog)s my_image.jpg --img-color green --invert --conversion-type average \n
+            """
     )
 
     parser.add_argument(
@@ -151,40 +165,41 @@ if __name__ == "__main__":
     parser.add_argument(
         '--img-color',
         default='colored',
-        help="image color options include color names (black, red, green, yellow, blue, magenta, cyan, white), rgb values(\"r, g, b\"), black and white(\"b&w\"), or colored(colored) which is the default value"
+        help="Set the output color. Options: 'colored' (default, per-pixel color), "
+             "'b&w', 'red', 'green', or an RGB string like \"255,100,20\"."
     )
 
     parser.add_argument(
         '--invert',
         action='store_true',
-        help="Check this flag to invert the image."
+        help="Invert the brightness (light <-> dark). Good for light terminal backgrounds."
     )
 
     parser.add_argument(
         '--width',
         type=int,
-        help="an integer value greater than 10 and less than your terminal windows's max width. Default value is calculated using terminals height and image's aspect ratio. if you input a value which is less than 10 or greater than your terminal's width than it will use the defalut value. Height will be calculated using the width to preserve the original image's aspect ratio"
+        help="Set a specific width in characters (e.g., 100). This will override the --fit setting."
     )
 
     parser.add_argument(
         '--fit',
         choices=['height', 'width'],
         default='height',
-        help="Fits to the terminal's height or width. default(height). will be ignored if provided with width"
+        help="Auto-fit to terminal 'height' or 'width'. (default: height)"
     )
 
     parser.add_argument(
         '--conversion-type',
         choices=['average', 'min-max', 'luminosity'],
         default='luminosity',
-        help="determines how the ascii value is calculated(average, min-max, luminosity(default)). Average calculates the ascii value by taking the average of the rgb values. Min-max takes the average of the minimum and maximum of rgb values. Luminosity takes a weighted average of the R(0.21), G(0.72) and B(0.07) values to account for human perception"
+        help="How to calculate brightness: 'luminosity' (best), 'average', or 'min-max'. Determines how rgb values of each pixel are converted to ascii"
     )
 
     parser.add_argument(
         '--contrast',
         type=float,
         default=1.0,
-        help="Enhance image contrast. >1.0 for more, <1.0 for less."
+        help="Enhance image contrast. >1.0 for more, <1.0 for less. (default: 1.0)"
     )
     
     image_fit_input = ""
