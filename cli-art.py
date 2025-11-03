@@ -165,8 +165,7 @@ if __name__ == "__main__":
     parser.add_argument(
         '--img-color',
         default='colored',
-        help="Set the output color. Options: 'colored' (default, per-pixel color), "
-             "'b&w', 'red', 'green', or an RGB string like \"255,100,20\"."
+        help="Set the output color. Options: 'black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white', or an RGB string like \"255,100,20\" or \"b&w\" or colored"
     )
 
     parser.add_argument(
