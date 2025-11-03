@@ -1,4 +1,5 @@
 # check invert
+# fix image width in get resized image
 from PIL import Image, ImageEnhance
 from colorama import Fore
 import sys
@@ -18,19 +19,37 @@ def convert_brightness_to_ascii(value, invert):
         return ascii_chars_reversed[int((value/100)*(len(ascii_chars)-1))]
     return ascii_chars[int((value/100)*(len(ascii_chars)-1))]
 
-def get_resized_img(img, image_fit, image_width):
-    image = img
-    # print(image.size)
-    if image_fit != "ignore":
-        if image_fit == "height":
-            new_image_height = int(shutil.get_terminal_size().lines/2)
-            return img.resize((int(new_image_height / (img.height / img.width)), new_image_height))
-        elif image_fit == "width":
+def get_resized_img(img, image_fit, image_width, video):
+    if not video:
+        if image_fit != "ignore":
+            if img.width > int(shutil.get_terminal_size().columns/3):
+                new_image_width = image_width
+                return img.resize((new_image_width, int(new_image_width * (img.height / img.width))))
+            if image_fit == "height":
+                new_image_height = int(shutil.get_terminal_size().lines/2)
+                return img.resize((int(new_image_height / (img.height / img.width)), new_image_height))
+            elif image_fit == "width":
+                new_image_width = image_width
+                return img.resize((new_image_width, int(new_image_width * (img.height / img.width))))
+        else:
             new_image_width = image_width
             return img.resize((new_image_width, int(new_image_width * (img.height / img.width))))
     else:
-        new_image_width = image_width
-        return img.resize((new_image_width, int(new_image_width * (img.height / img.width))))
+        original_height, original_width = img.shape[:2]
+        if image_fit != "ignore":
+            if original_width > int(shutil.get_terminal_size().columns/3):
+                new_image_width = image_width
+                return cv2.resize(img, (new_image_width, int(new_image_width * (original_height / original_width))))
+            if image_fit == "height":
+                new_image_height = int(shutil.get_terminal_size().lines/2)
+                return cv2.resize(img, (int(new_image_height / (original_height / original_width)), new_image_height))
+            elif image_fit == "width":
+                new_image_width = image_width
+                return cv2.resize(img, (new_image_width, int(new_image_width * (original_height / original_width))))
+        else:
+            new_image_width = image_width
+            return cv2.resize(img, (new_image_width, int(new_image_width * (original_height / original_width))))
+
     
 def get_pixel_details(image):
     pixel_details = []
@@ -121,6 +140,52 @@ def img_to_ascii(filepath, image_color, invert, image_fit, image_width, pixel_co
         with Image.open(image_source) as image_file:
             # print("Successfully loaded image")
             # print(image_file.width, image_file.height, "og image size")
+            image = get_resized_img(image_file, image_fit, image_width, video=False)
+            if contrast != 1.0:
+                enhancer = ImageEnhance.Contrast(image)
+                image = enhancer.enhance(contrast)
+            if brightness != 1.0:
+                enhancer = ImageEnhance.Brightness(image)
+                image = enhancer.enhance(brightness)
+
+            pixel_details = get_pixel_details(image)
+
+            pixel_brightness_values = get_pixel_brightness_values(pixel_details, pixel_conversion_type)
+            # print(pixel_brightness_values[0], len(pixel_brightness_values))
+
+            pixel_ascii_char = get_pixel_ascii_char(pixel_brightness_values, invert)
+
+            print_image(pixel_ascii_char, pixel_details, image_color)
+    except FileNotFoundError:
+        print("Error: The specified file was not found. Please check the file path and try again.")
+        sys.exit(1)
+    except Exception as e:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        line_number = exc_traceback.tb_next.tb_lineno if exc_traceback.tb_next else exc_traceback.tb_lineno
+        print(f"Error opening or processing image on line {line_number}: {e}", file=sys.stderr)
+        sys.exit(1)
+
+def img_to_ascii_for_vid():
+    image_source = None
+    if filepath.startswith('http://') or filepath.startswith('https://'):
+        try:
+            # Download the image data
+            response = requests.get(filepath)
+            response.raise_for_status()  # Check for bad responses (404, 500)
+            
+            # Use BytesIO to treat the downloaded data (in memory) like a file
+            image_source = BytesIO(response.content)
+            
+        except requests.exceptions.RequestException as e:
+            print(f"Error: Failed to download image from URL. {e}", file=sys.stderr)
+            sys.exit(1) # Exit if download fails
+    
+    else:
+        image_source = filepath
+    try:
+        with Image.open(image_source) as image_file:
+            # print("Successfully loaded image")
+            # print(image_file.width, image_file.height, "og image size")
             image = get_resized_img(image_file, image_fit, image_width)
             if contrast != 1.0:
                 enhancer = ImageEnhance.Contrast(image)
@@ -141,7 +206,44 @@ def img_to_ascii(filepath, image_color, invert, image_fit, image_width, pixel_co
         print("Error: The specified file was not found. Please check the file path and try again.")
         sys.exit(1)
     except Exception as e:
-        print(f"Error opening or processing image: {e}", file=sys.stderr)
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        line_number = exc_traceback.tb_next.tb_lineno if exc_traceback.tb_next else exc_traceback.tb_lineno
+        print(f"Error opening or processing image on line {line_number}: {e}", file=sys.stderr)
+        sys.exit(1)
+
+def vid_to_ascii(filepath, image_color, invert, image_fit, image_width, pixel_conversion_type, contrast, brightness):
+    if filepath.startswith('http://') or filepath.startswith('https://'):
+        try:
+            response = requests.get(filepath) # Download the image data
+            response.raise_for_status()  # Check for bad responses (404, 500)
+            video_source = BytesIO(response.content)  # Use BytesIO to treat the downloaded data (in memory) like a file
+            
+        except requests.exceptions.RequestException as e:
+            print(f"Error: Failed to download image from URL. {e}", file=sys.stderr)
+            sys.exit(1) # Exit if download fails
+    
+    else:
+        video_source = filepath
+
+    try:
+        video_capture = cv2.VideoCapture(video_source)
+        while True:
+            success, frame = video_capture.read()
+            if not success:
+                break
+            frame = get_resized_img(frame, image_fit, image_width, video=True)
+            frame = cv2.convertScaleAbs(frame, alpha=contrast, beta=brightness)
+            frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            pillow_image = Image.fromarray(frame_rgb)
+        print("Success")
+
+    except FileNotFoundError:
+        print("Error: The specified file was not found. Please check the file path and try again.")
+        sys.exit(1)
+    except Exception as e:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        line_number = exc_traceback.tb_next.tb_lineno if exc_traceback.tb_next else exc_traceback.tb_lineno
+        print(f"Error opening or processing image on line {line_number}: {e}", file=sys.stderr)
         sys.exit(1)
 
 if __name__ == "__main__":
@@ -247,4 +349,6 @@ if __name__ == "__main__":
         input_image_color = user_inputs.img_color
 
 
-    img_to_ascii(filepath=user_inputs.filepath, image_color=input_image_color, invert=user_inputs.invert, image_fit=image_fit_input, image_width=user_input_image_width, pixel_conversion_type=user_inputs.conversion_type, contrast=user_inputs.contrast, brightness=user_inputs.brightness)
+    # img_to_ascii(filepath=user_inputs.filepath, image_color=input_image_color, invert=user_inputs.invert, image_fit=image_fit_input, image_width=user_input_image_width, pixel_conversion_type=user_inputs.conversion_type, contrast=user_inputs.contrast, brightness=user_inputs.brightness)
+
+    vid_to_ascii(filepath=user_inputs.filepath, image_color=input_image_color, invert=user_inputs.invert, image_fit=image_fit_input, image_width=user_input_image_width, pixel_conversion_type=user_inputs.conversion_type, contrast=user_inputs.contrast, brightness=user_inputs.brightness)
