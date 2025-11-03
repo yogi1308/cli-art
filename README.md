@@ -68,10 +68,7 @@ High Contrast:
 ```
 ## ✨ Command-Line Options
 
-Here is the full list of arguments you can use. Remeber you can see this menu at any time by running `./cli-art --help`.
-## ✨ Command-Line Options
-
-Here is the full list of arguments you can use. You can see this menu at any time by running `./cli-art --help`.
+Here is the full list of arguments you can use. Remember you can see this menu at any time by running `./cli-art --help`.
 
 | Argument | Default | Description |
 | :--- | :--- | :--- |
