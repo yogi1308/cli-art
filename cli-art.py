@@ -98,7 +98,7 @@ def print_image(pixel_ascii_char, pixel_details, image_color):
             print()
             print()
 
-def to_ascii(filepath, image_color, invert, image_fit, image_width, pixel_conversion_type, contrast):
+def img_to_ascii(filepath, image_color, invert, image_fit, image_width, pixel_conversion_type, contrast, brightness):
     image_source = None
     if filepath.startswith('http://') or filepath.startswith('https://'):
         try:
@@ -123,6 +123,9 @@ def to_ascii(filepath, image_color, invert, image_fit, image_width, pixel_conver
             if contrast != 1.0:
                 enhancer = ImageEnhance.Contrast(image)
                 image = enhancer.enhance(contrast)
+            if brightness != 1.0:
+                enhancer = ImageEnhance.Brightness(image)
+                image = enhancer.enhance(brightness)
 
             pixel_details = get_pixel_details(image)
 
@@ -201,6 +204,13 @@ if __name__ == "__main__":
         default=1.0,
         help="Enhance image contrast. >1.0 for more, <1.0 for less. (default: 1.0)"
     )
+
+    parser.add_argument(
+        '--brightness',
+        type=float,
+        default=1.0,
+        help="Enhance image contrast. >1.0 for more, <1.0 for less. (default: 1.0)"
+    )
     
     image_fit_input = ""
     user_inputs = parser.parse_args()
@@ -235,4 +245,4 @@ if __name__ == "__main__":
         input_image_color = user_inputs.img_color
 
 
-    to_ascii(filepath=user_inputs.filepath, image_color=input_image_color, invert=user_inputs.invert, image_fit=image_fit_input, image_width=user_input_image_width, pixel_conversion_type=user_inputs.conversion_type, contrast=user_inputs.contrast)
+    img_to_ascii(filepath=user_inputs.filepath, image_color=input_image_color, invert=user_inputs.invert, image_fit=image_fit_input, image_width=user_input_image_width, pixel_conversion_type=user_inputs.conversion_type, contrast=user_inputs.contrast, brightness=user_inputs.brightness)

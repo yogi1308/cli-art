@@ -102,3 +102,4 @@ Here is the full list of arguments you can use. Remember you can see this menu a
 | `--fit` | 'height' | Auto-fit to terminal 'height' or 'width'. |
 | `--conversion-type` | 'luminosity' | How to calculate brightness: 'luminosity' (best), 'average', or 'min-max'. Determines how rgb values of each pixel are converted to ascii |
 | `--contrast` | 1.0 | Enhance image contrast. >1.0 for more, <1.0 for less. |
+| `--brightness` | 1.0 | Enhance image brightness. >1.0 for more, <1.0 for less. |
