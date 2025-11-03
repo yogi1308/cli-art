@@ -1,5 +1,4 @@
 # check invert
-# screen record using it to insert it into readme.md
 from PIL import Image, ImageEnhance
 from colorama import Fore
 import sys
@@ -7,6 +6,9 @@ import argparse
 import shutil
 import requests  # For downloading the URL
 from io import BytesIO # To let Pillow read the downloaded data from memory
+import cv2
+import numpy as np
+import os
 
 def convert_brightness_to_ascii(value, invert):
     ascii_chars = "`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
