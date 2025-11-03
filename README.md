@@ -28,7 +28,7 @@ This is a command-line tool, so you must run it from a terminal (like PowerShell
 5.  Run the program! You must give it a path to an image file or a URL.
     ```bash
     # Example for Windows
-    cli-art.exe my-picture.jpg
+    cli-art-windows.exe my-picture.jpg
     
     # Example for Linux/WSL
     ./cli-art my-picture.jpg
@@ -40,31 +40,46 @@ You can get a full list of all commands by running the program with the `--help`
 
 ```bash
 # Windows
-cli-art.exe --help
+./cli-art-windows.exe --help
 
-# Linux/WSL
+# Linux
 ./cli-art --help
 ```
 Basic From a local file
 ```bash
+# Linux
 ./cli-art image.png
+# Windows
+./cli-art-windows.exe image.png
 ```
 From a URL (remember to use quotes!):
 ```bash
+# Linux
 ./cli-art "https://i.pinimg.com/1200x/95/36/8e/95368ef6621659a09e8f2d1387c7fb8a.jpg"
+# Windows
+./cli-art-windows.exe "https://i.pinimg.com/1200x/95/36/8e/95368ef6621659a09e8f2d1387c7fb8a.jpg"
 ```
 Full Color(if b&w then remeber to use quotes!) and Custom Width:
 ```bash
+# Linux
 ./cli-art image.png --width 100 --img-color "b&w"
+# Windows
+./cli-art-windows.exe image.png --width 100 --img-color "b&w"
 ```
 Green Text, Inverted, and "Average" Brightness:
 ```bash
+# Linux
 ./cli-art image.png --img-color green --invert --conversion-type average
+# Windows
+./cli-art-windows.exe image.png --img-color green --invert --conversion-type average
 ```
 
 High Contrast:
 ```bash
+# Linux
 ./cli-art image.png --contrast 2.5
+# Windows
+./cli-art-windows.exe --contrast 2.5
 ```
 ## ✨ Command-Line Options
 
