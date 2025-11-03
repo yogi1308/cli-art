@@ -7,6 +7,10 @@ You can download the latest release from below.
 | **Windows** | [Download .exe](https://github.com/yogi1308/cli-art/releases/download/v1.0/cli-art-windows.exe) |
 | **Linux (Ubuntu-based / WSL)** | [Download binary](https://github.com/yogi1308/cli-art/releases/download/v1.0/cli-art) |
 
+## 🤔 What it does
+Converts an image to ascii art inside your terminal. It is recommended to view the image with terminal maximized and zoomed out as much you can. The program reads the width of your screen to make sure the output fits it so type it the commmand and then zoom out completely and then press enter.
+![CLI-Art Screenshot](example-output.png)
+
 ## 💻 How to Use
 
 This is a command-line tool, so you must run it from a terminal (like PowerShell, Command Prompt, or your Linux/WSL terminal).
