@@ -9,7 +9,7 @@ You can download the latest release from below.
 
 ## 🤔 What it does
 Converts an image to ascii art inside your terminal. It is recommended to view the image with terminal maximized and zoomed out as much you can. The program reads the width of your screen to make sure the output fits it so type it the commmand and then zoom out completely and then press enter.
-![CLI-Art Screenshot](example-output.png)
+![CLI-Art GIF](example-output.gif)
 
 ## 💻 How to Use
 

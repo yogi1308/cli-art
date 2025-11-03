@@ -1,4 +1,5 @@
 # check invert
+# screen record using it to insert it into readme.md
 from PIL import Image, ImageEnhance
 from colorama import Fore
 import sys
