@@ -1,6 +1,7 @@
 import argparse
 import shutil
 from cli_art_image import to_ascii
+from  cli_art_video import vid_to_ascii
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -64,6 +65,13 @@ if __name__ == "__main__":
         default=1.0,
         help="Enhance image contrast. >1.0 for more, <1.0 for less. (default: 1.0)"
     )
+
+    parser.add_argument(
+        '--brightness',
+        type=float,
+        default=1.0,
+        help="Enhance image brightness. >1.0 for more, <1.0 for less. (default: 1.0)"
+    )
     
     image_fit_input = ""
     user_inputs = parser.parse_args()
@@ -96,6 +104,5 @@ if __name__ == "__main__":
             raise ValueError(f"Error: your argument for rgb values doesn't contain 3 values")
     else:
         input_image_color = user_inputs.img_color
-
-
-    to_ascii(filepath=user_inputs.filepath, image_color=input_image_color, invert=user_inputs.invert, image_fit=image_fit_input, image_width=user_input_image_width, pixel_conversion_type=user_inputs.conversion_type, contrast=user_inputs.contrast)
+    
+    vid_to_ascii(filepath=user_inputs.filepath, image_color=input_image_color, invert=user_inputs.invert, image_fit=image_fit_input, image_width=user_input_image_width, pixel_conversion_type=user_inputs.conversion_type, contrast=user_inputs.contrast, brightness=user_inputs.brightness) if user_inputs.filepath.endswith(".mp4") else to_ascii(filepath=user_inputs.filepath, image_color=input_image_color, invert=user_inputs.invert, image_fit=image_fit_input, image_width=user_input_image_width, pixel_conversion_type=user_inputs.conversion_type, contrast=user_inputs.contrast, brightness=user_inputs.brightness)

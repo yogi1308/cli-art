@@ -4,7 +4,7 @@ from PIL import Image, ImageEnhance
 from io import BytesIO
 from cli_art_helpers import get_resized_img, get_pixel_details, get_pixel_brightness_values, get_pixel_ascii_char, print_image
 
-def to_ascii(filepath, image_color, invert, image_fit, image_width, pixel_conversion_type, contrast):
+def to_ascii(filepath, image_color, invert, image_fit, image_width, pixel_conversion_type, contrast, brightness):
     image_source = None
     if filepath.startswith('http://') or filepath.startswith('https://'):
         try:
@@ -24,6 +24,9 @@ def to_ascii(filepath, image_color, invert, image_fit, image_width, pixel_conver
             if contrast != 1.0:
                 enhancer = ImageEnhance.Contrast(image)
                 image = enhancer.enhance(contrast)
+            if brightness != 1.0:
+                enhancer = ImageEnhance.Brightness(image)
+                image = enhancer.enhance(brightness)
 
             pixel_details = get_pixel_details(image)
 

@@ -1,5 +1,6 @@
 from colorama import Fore
 import shutil
+import cv2
 
 VALID_COLORS = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white']
 
@@ -11,13 +12,37 @@ def convert_brightness_to_ascii(value, invert):
         return ascii_chars_reversed[int((value/100)*(len(ascii_chars)-1))]
     return ascii_chars[int((value/100)*(len(ascii_chars)-1))]
 
-def get_resized_img(img, image_fit, image_width):
-    if image_fit != "height":
-        new_image_height = int(shutil.get_terminal_size().lines/2)
-        return img.resize((int(new_image_height / (img.height / img.width)), new_image_height))
+def get_resized_img(img, image_fit, image_width, video):
+    if not video:
+        if image_fit != "ignore":
+            if img.width > int(shutil.get_terminal_size().columns/3):
+                new_image_width = image_width
+                return img.resize((new_image_width, int(new_image_width * (img.height / img.width))))
+            if image_fit == "height":
+                new_image_height = int(shutil.get_terminal_size().lines/2)
+                return img.resize((int(new_image_height / (img.height / img.width)), new_image_height))
+            elif image_fit == "width":
+                new_image_width = image_width
+                return img.resize((new_image_width, int(new_image_width * (img.height / img.width))))
+        else:
+            new_image_width = image_width
+            return img.resize((new_image_width, int(new_image_width * (img.height / img.width))))
     else:
-        new_image_width = image_width
-        return img.resize((new_image_width, int(new_image_width * (img.height / img.width))))
+        original_height, original_width = img.shape[:2]
+        if image_fit != "ignore":
+            if original_width > int(shutil.get_terminal_size().columns/3):
+                new_image_width = image_width
+                return cv2.resize(img, (new_image_width, int(new_image_width * (original_height / original_width))))
+            if image_fit == "height":
+                new_image_height = int(shutil.get_terminal_size().lines/2)
+                return cv2.resize(img, (int(new_image_height / (original_height / original_width)), new_image_height))
+            elif image_fit == "width":
+                new_image_width = image_width
+                return cv2.resize(img, (new_image_width, int(new_image_width * (original_height / original_width))))
+        else:
+            new_image_width = image_width
+            return cv2.resize(img, (new_image_width, int(new_image_width * (original_height / original_width))))
+
     
 def get_pixel_details(image):
     pixel_details = []
