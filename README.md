@@ -10,6 +10,7 @@ You can download the latest release from below.
 ## 🤔 What it does
 Converts an image to ascii art inside your terminal. It is recommended to view the image with terminal maximized and zoomed out as much you can. The program reads the width of your screen to make sure the output fits it so type it the commmand and then zoom out completely and then press enter.
 ![CLI-Art GIF](example-output.gif)
+![CLI-Art AS GIF](Bad-apple-ascii-animation.mp4)
 
 ## 🤔 Why I  made it
 Mostly for FUNNNNNN!!!!! Also I wanted to make something in python which i have been learning on my own for the past few weeks and was inspired by this fun [youtube video](https://www.youtube.com/watch?v=KdoaiGTIBY4)
