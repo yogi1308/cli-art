@@ -1,6 +1,8 @@
 from colorama import Fore
 import shutil
 
+VALID_COLORS = ['black', 'red', 'green', 'yellow', 'blue', 'magenta', 'cyan', 'white']
+
 def convert_brightness_to_ascii(value, invert):
     ascii_chars = "`^\",:;Il!i~+_-?][}{1)(|\\/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$"
     ascii_chars_reversed = ascii_chars[::-1]
@@ -10,14 +12,9 @@ def convert_brightness_to_ascii(value, invert):
     return ascii_chars[int((value/100)*(len(ascii_chars)-1))]
 
 def get_resized_img(img, image_fit, image_width):
-    image = img
-    if image_fit != "ignore":
-        if image_fit == "height":
-            new_image_height = int(shutil.get_terminal_size().lines/2)
-            return img.resize((int(new_image_height / (img.height / img.width)), new_image_height))
-        elif image_fit == "width":
-            new_image_width = image_width
-            return img.resize((new_image_width, int(new_image_width * (img.height / img.width))))
+    if image_fit != "height":
+        new_image_height = int(shutil.get_terminal_size().lines/2)
+        return img.resize((int(new_image_height / (img.height / img.width)), new_image_height))
     else:
         new_image_width = image_width
         return img.resize((new_image_width, int(new_image_width * (img.height / img.width))))
@@ -69,14 +66,13 @@ def print_image(pixel_ascii_char, pixel_details, image_color):
                 img_str += "\n\n"
         else:
             raise ValueError 
-    elif image_color.lower().strip() == 'black' or image_color.lower().strip() == 'red' or image_color.lower().strip() == 'green' or image_color.lower().strip() == 'yellow' or image_color.lower().strip() == 'blue' or image_color.lower().strip() == 'magenta' or image_color.lower().strip() == 'cyan' or image_color.lower().strip() == 'white':
+    elif image_color.lower().strip() in VALID_COLORS:
         image_color = image_color.upper().strip()
         for value in range(0, len(pixel_ascii_char)):
             for row_value in range(0, len(pixel_ascii_char[value])):
                 img_str += getattr(Fore, image_color) + pixel_ascii_char[value][row_value] * 3
             img_str += "\n\n"
     elif image_color.lower().strip() == "b&w":
-        print(f"b&w")
         for value in range(0, len(pixel_ascii_char)):
             for row_value in range(0, len(pixel_ascii_char[value])):
                 img_str += f"{pixel_ascii_char[value][row_value] * 3}"
