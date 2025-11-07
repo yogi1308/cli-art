@@ -78,14 +78,24 @@ def animation(screen, settings_dict):
         pass # The video ended normally
     except KeyboardInterrupt:
         pass # User pressed Ctrl+C
+    finally:
+        # Always clean up
+        if effect:
+            effect.stop_frame()
+
 
 class VideoPlayerEffect(Effect):
     def __init__(self, screen, **kwargs):
         super().__init__(screen)
         self.args = kwargs
-        video_path = self.args["filepath"]
+        video_path = self.args["filepath"] 
         self.video_capture = cv2.VideoCapture(video_path)
+
+        if not self.video_capture.isOpened():
+            raise Exception(f"Could not open video file or stream: {video_path}")
+        
         fps = self.video_capture.get(cv2.CAP_PROP_FPS)
+        if fps == 0: fps = 30 # A fallback for webcams/streams
         self._frame_delay = 1.0 / fps
         self._last_update_time = 0
     def _update(self, frame_no):
@@ -98,9 +108,16 @@ class VideoPlayerEffect(Effect):
         frame = get_resized_img(frame, self.args["image_fit"], self.args["image_width"], video=True)
         frame = cv2.convertScaleAbs(frame, alpha=self.args["contrast"], beta=self.args["brightness"])
         frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        pillow_image = Image.fromarray(frame_rgb)
-        pixel_details = get_pixel_details(pillow_image)
+        
+        # --- THE FIX ---
+        # 1. Convert the NumPy array to a list instantly
+        pixel_details = frame_rgb.tolist() 
+        # 2. You don't even need the Pillow image anymore!
+        #    (unless get_resized_img needs it, but you're passing it 'frame')
+        # --- END FIX ---
 
+        pixel_brightness_values = get_pixel_brightness_values(pixel_details, self.args["pixel_conversion_type"])
+        # ...
         pixel_brightness_values = get_pixel_brightness_values(pixel_details, self.args["pixel_conversion_type"])
 
         pixel_ascii_char = get_pixel_ascii_char(pixel_brightness_values, self.args["invert"])
