@@ -2,20 +2,33 @@
 
 You can download the latest release from below.
 
-| Operating System | Download |
-| :--- | :--- |
-| **Windows** | [Download .exe](https://github.com/yogi1308/cli-art/releases/download/v1.1/cli-art-windows.exe) |
-| **Linux (Ubuntu-based / WSL)** | [Download binary](https://github.com/yogi1308/cli-art/releases/download/v1.1/cli-art) |
+| Operating System | Download | Version |
+| :--- | :--- | :--- |
+| **Windows** | [Download .exe](https://github.com/yogi1308/cli-art/releases/download/v1.1/cli-art-windows.exe) | v.1.1 - Adds ASCII Animation|
+| **Linux (Ubuntu-based / WSL)** | [Download binary](https://github.com/yogi1308/cli-art/releases/download/v1.1/cli-art) | v.1.1 - Adds ASCII Animation|
 
-| Operating System | Download |
+| Operating System | Download | Version |
 | :--- | :--- | :--- |
 | **Windows** | [Download .exe](https://github.com/yogi1308/cli-art/releases/download/v1.0/cli-art-windows.exe) | v.1.0  - First Release|
 | **Linux (Ubuntu-based / WSL)** | [Download binary](https://github.com/yogi1308/cli-art/releases/download/v1.0/cli-art) | v.1.0 - First Release|
 
 ## 🤔 What it does
+
 Converts an image to ascii art inside your terminal. It is recommended to view the image with terminal maximized and zoomed out as much you can. The program reads the width of your screen to make sure the output fits it so type it the commmand and then zoom out completely and then press enter.
-![CLI-Art GIF](example-output.gif)
-![CLI-Art AS GIF](bad-apple-ascii-animation.gif)
+
+<p align="center">
+  <img src="example-output.gif" alt="CLI-Art GIF">
+</p>
+<p align="center">
+  <em>Image-to-ASCII Conversion</em>
+</p>
+
+<br><br><br> <p align="center">
+  <img src="bad-apple-ascii-animation.gif" alt="CLI-Art AS GIF">
+</p>
+<p align="center">
+  <em>Video-to-ASCII Animation</em>
+</p>
 
 ## 🤔 Why I  made it
 Mostly for FUNNNNNN!!!!! Also I wanted to make something in python which i have been learning on my own for the past few weeks and was inspired by this fun [youtube video](https://www.youtube.com/watch?v=KdoaiGTIBY4)
