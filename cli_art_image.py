@@ -20,7 +20,7 @@ def to_ascii(filepath, image_color, invert, image_fit, image_width, pixel_conver
         image_source = filepath
     try:
         with Image.open(image_source) as image_file:
-            image = get_resized_img(image_file, image_fit, image_width)
+            image = get_resized_img(image_file, image_fit, image_width, video=False)
             if contrast != 1.0:
                 enhancer = ImageEnhance.Contrast(image)
                 image = enhancer.enhance(contrast)
