@@ -1,7 +1,7 @@
 import argparse
 import shutil
 from cli_art_image import to_ascii
-from  cli_art_video import vid_to_ascii
+from  cli_art_video import vid_to_ascii_legacy
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -72,6 +72,13 @@ if __name__ == "__main__":
         default=1.0,
         help="Enhance image brightness. >1.0 for more, <1.0 for less. (default: 1.0)"
     )
+
+    parser.add_argument(
+        '--legacy',
+        action='store_true',
+        default=False,
+        help="Uses the old legacy way of converting videos to ascii animations. Best suited for small widths and best viewed zoomed out after entering the command"
+    )
     
     image_fit_input = ""
     user_inputs = parser.parse_args()
@@ -105,4 +112,10 @@ if __name__ == "__main__":
     else:
         input_image_color = user_inputs.img_color
     
-    vid_to_ascii(filepath=user_inputs.filepath, image_color=input_image_color, invert=user_inputs.invert, image_fit=image_fit_input, image_width=user_input_image_width, pixel_conversion_type=user_inputs.conversion_type, contrast=user_inputs.contrast, brightness=user_inputs.brightness) if user_inputs.filepath.endswith(".mp4") else to_ascii(filepath=user_inputs.filepath, image_color=input_image_color, invert=user_inputs.invert, image_fit=image_fit_input, image_width=user_input_image_width, pixel_conversion_type=user_inputs.conversion_type, contrast=user_inputs.contrast, brightness=user_inputs.brightness)
+    if user_inputs.filepath.endswith(".mp4"):
+        if user_inputs.legacy:
+            vid_to_ascii_legacy(filepath=user_inputs.filepath, image_color=input_image_color, invert=user_inputs.invert, image_fit=image_fit_input, image_width=user_input_image_width, pixel_conversion_type=user_inputs.conversion_type, contrast=user_inputs.contrast, brightness=user_inputs.brightness) 
+        else: 
+            print(user_inputs.legacy)
+    else: 
+        to_ascii(filepath=user_inputs.filepath, image_color=input_image_color, invert=user_inputs.invert, image_fit=image_fit_input, image_width=user_input_image_width, pixel_conversion_type=user_inputs.conversion_type, contrast=user_inputs.contrast, brightness=user_inputs.brightness)

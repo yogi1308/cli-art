@@ -6,8 +6,11 @@ from cli_art_helpers import get_resized_img, get_pixel_details, get_pixel_bright
 import cv2
 from time import sleep
 import shutil
+from asciimatics.screen import Screen
+from asciimatics.scene import Scene
+from asciimatics.effects import Effect
 
-def vid_to_ascii(filepath, image_color, invert, image_fit, image_width, pixel_conversion_type, contrast, brightness):
+def vid_to_ascii_legacy(filepath, image_color, invert, image_fit, image_width, pixel_conversion_type, contrast, brightness):
     if filepath.startswith('http://') or filepath.startswith('https://'):
         try:
             response = requests.get(filepath) # Download the image data
@@ -52,3 +55,19 @@ def vid_to_ascii(filepath, image_color, invert, image_fit, image_width, pixel_co
         line_number = exc_traceback.tb_next.tb_lineno if exc_traceback.tb_next else exc_traceback.tb_lineno
         print(f"Error opening or processing image on line {line_number}: {e}", file=sys.stderr)
         sys.exit(1)
+
+# class VideoPlayerEffect(Effect):
+#     frame = get_resized_img(frame, image_fit, image_width, video=True)
+#     frame = cv2.convertScaleAbs(frame, alpha=contrast, beta=brightness)
+#     frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+#     pillow_image = Image.fromarray(frame_rgb)
+#     pixel_details = get_pixel_details(pillow_image)
+
+#     pixel_brightness_values = get_pixel_brightness_values(pixel_details, pixel_conversion_type)
+
+#     pixel_ascii_char = get_pixel_ascii_char(pixel_brightness_values, invert)
+
+#     print("\033[H", end="")
+#     print(print_image(pixel_ascii_char, pixel_details, image_color), end ="")
+#     print("\033[H", end="")
+#     sleep(1/24)
