@@ -1,7 +1,11 @@
 import argparse
 import shutil
+import requests
+import sys
+import os
+from asciimatics.screen import Screen
 from cli_art_image import to_ascii
-from  cli_art_video import vid_to_ascii_legacy
+from  cli_art_video import vid_to_ascii_legacy, animation
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -112,10 +116,49 @@ if __name__ == "__main__":
     else:
         input_image_color = user_inputs.img_color
     
-    if user_inputs.filepath.endswith(".mp4"):
-        if user_inputs.legacy:
-            vid_to_ascii_legacy(filepath=user_inputs.filepath, image_color=input_image_color, invert=user_inputs.invert, image_fit=image_fit_input, image_width=user_input_image_width, pixel_conversion_type=user_inputs.conversion_type, contrast=user_inputs.contrast, brightness=user_inputs.brightness) 
-        else: 
-            print(user_inputs.legacy)
-    else: 
+    if user_inputs.filepath.endswith((".mp4", ".avi", ".mkv")):
+            temp_file_to_delete = None
+            try:
+                args_to_pass = {
+                    "image_color": input_image_color, 
+                    "invert": user_inputs.invert, 
+                    "image_fit": image_fit_input, 
+                    "image_width": user_input_image_width, 
+                    "pixel_conversion_type": user_inputs.conversion_type, 
+                    "contrast": user_inputs.contrast, 
+                    "brightness": user_inputs.brightness
+                }
+                filepath = user_inputs.filepath
+                video_source_path = None
+                if filepath.startswith('http://') or filepath.startswith('https://'):
+                    print("Downloading video...")
+                    try:
+                        response = requests.get(filepath)
+                        response.raise_for_status()
+                        video_source_path = "temp_video_file.mp4" 
+                        with open(video_source_path, "wb") as f:
+                            f.write(response.content)
+                        temp_file_to_delete = video_source_path # Mark for deletion
+                    except Exception as e:
+                        print(f"Error downloading video: {e}", file=sys.stderr)
+                        sys.exit(1)
+                else:
+                    video_source_path = filepath # It's a local file
+                
+                # Add the final, correct path to the args
+                args_to_pass["filepath"] = video_source_path
+                if user_inputs.legacy:
+                    vid_to_ascii_legacy(filepath=user_inputs.filepath, image_color=input_image_color, invert=user_inputs.invert, image_fit=image_fit_input, image_width=user_input_image_width, pixel_conversion_type=user_inputs.conversion_type, contrast=user_inputs.contrast, brightness=user_inputs.brightness) 
+                else:
+                    Screen.wrapper(animation, arguments=[args_to_pass])
+            except KeyboardInterrupt:
+                print("Stopped.")
+            except Exception as e:
+                print(f"An error occurred: {e}", file=sys.stderr)
+            finally:
+                # Clean up the temp file if we made one
+                if temp_file_to_delete:
+                    os.remove(temp_file_to_delete)
+            print("\033[0m")
+    else:
         to_ascii(filepath=user_inputs.filepath, image_color=input_image_color, invert=user_inputs.invert, image_fit=image_fit_input, image_width=user_input_image_width, pixel_conversion_type=user_inputs.conversion_type, contrast=user_inputs.contrast, brightness=user_inputs.brightness)
